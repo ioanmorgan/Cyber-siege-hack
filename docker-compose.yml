@@ -1,0 +1,8 @@
+version: '1'
+services:
+  regular-server:
+    build: ./simulator-server
+    ports:
+      - "3000:3000"
+  bot-server:
+    build: ./attack-bot
