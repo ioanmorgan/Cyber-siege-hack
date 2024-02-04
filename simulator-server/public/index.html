@@ -1,0 +1,16 @@
+<!-- Include socket.io-client library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+<!-- Include moment.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script type="module" src="index.js"></script>
+
+<!-- Container for the combined chart -->
+<h1>My service</h1>
+<b>Service disruption probability: <div id='probability'>Waiting for sufficient data...</div></b>
+
+<div style="width: 80%; margin: 0 auto;">
+  <canvas id="combinedChart"></canvas>
+</div>

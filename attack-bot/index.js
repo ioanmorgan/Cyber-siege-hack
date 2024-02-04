@@ -4,11 +4,12 @@ const http = require('http');
 const simulatorServerHost = 'simulator-server';
 const simulatorServerPort = 3000;
 
+// To make a single, simple request
 const makeRequest = () => {
   const options = {
     hostname: simulatorServerHost,
     port: simulatorServerPort,
-    path: '/',
+    path: '/attack-me',
     method: 'GET',
   };
 
@@ -31,5 +32,6 @@ const makeRequest = () => {
   req.end();
 };
 
+
 // Make requests at regular intervals
-setInterval(makeRequest, 2000);
+setInterval(makeRequest, 1000);
