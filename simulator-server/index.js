@@ -12,7 +12,9 @@ let failureCount = 0;
 
 
 // Serve the Connections Dashboard (index.html) on `/`
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve static files from the public directory
+app.use(express.static('public'));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -26,7 +28,7 @@ setInterval(() => {
 
 io.on('connection', (socket) => {
   // Send initial connection count to new clients
-  socket.emit('connectionCounts', { successful: successfulCount, failures: failureCount  });
+  socket.emit('connectionCounts', { successfulConnections: successfulCount, failedConnections: failureCount  });
 });
 
 /**
