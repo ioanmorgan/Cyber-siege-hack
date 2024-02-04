@@ -1,0 +1,14 @@
+version: '1'
+services:
+  simulator-server:
+    build: ./simulator-server
+    volumes:
+      - ./simulator-server:/usr/src/app
+    ports:
+      - "3000:3000"
+  bot-server:
+    build: ./attack-bot
+    volumes:
+      - ./attack-bot:/usr/src/app
+    ports:
+      - "3001:3001"
