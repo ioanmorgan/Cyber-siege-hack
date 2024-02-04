@@ -1,2 +1,3 @@
 simulator-server/node_modules/*
+traffic-bot/node_modules/*
 attack-bot/node_modules/*

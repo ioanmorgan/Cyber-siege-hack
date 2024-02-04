@@ -1,0 +1,166 @@
+<!-- Include socket.io-client library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+<!-- Include moment.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<!-- Include Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Container for the combined chart -->
+<h1>My service</h1>
+<b>Service disruption probability: <div id='probability'>Waiting for sufficient data...</div></b>
+
+<div style="width: 80%; margin: 0 auto;">
+  <canvas id="combinedChart"></canvas>
+</div>
+
+<script>
+
+  /**
+   *  Configurables
+   */
+  const maxDataPoints = 100;   // Maximum data points to store & display
+  const monteCarloSampleSize = 25; // Size of the sample that the simulator should use
+
+
+  // Global data
+  const connectionData = []; // Raw data from the server
+
+  /**
+   * Monte Carlo simulation example
+   */
+   const runMonteCarloSimulation = (sampleSize) => {
+
+    // Ensure the dataset has enough data points
+    if (connectionData.length < monteCarloSampleSize) {
+      console.info('Insufficient data points for simulation.');
+      return;
+    }
+
+    // Randomly sample points from the dataset
+    const sample = getRandomSample(connectionData, sampleSize);
+
+    // Calculate the average failure rate in the sample
+    const averageFailureRate = calculateAverageFailureRate(sample);
+
+    // Update the HTML with the result
+    const probabilityElement = document.getElementById('probability');
+    probabilityElement.textContent = `${(averageFailureRate * 100).toFixed(0)}%`;
+  };
+
+  // Function to randomly sample points from an array
+  const getRandomSample = (array, size) => {
+    const sample = [];
+    const indices = [];
+
+    while (indices.length < size) {
+      const randomIndex = Math.floor(Math.random() * array.length);
+      if (!indices.includes(randomIndex)) {
+        indices.push(randomIndex);
+        sample.push(array[randomIndex]);
+      }
+    }
+
+    return sample;
+  }
+
+  // Function to calculate the average failure rate in a sample
+  const calculateAverageFailureRate = (sample) => {
+    
+    const totalSuccessCount = sample.reduce((sum, point) => sum + point.successfulConnections, 0);
+    const totalFailureCount = sample.reduce((sum, point) => sum + point.failedConnections, 0);
+    
+    if (totalSuccessCount + totalFailureCount === 0) {
+      // Handle the case where both success and failure counts are zero
+      return 0;
+    }
+
+    // Calculate the average failure rate
+    const averageFailureRate = totalFailureCount / (totalSuccessCount + totalFailureCount);
+    return averageFailureRate;
+  };
+
+
+  /**
+   * Draw the charts....
+   */ 
+
+  const successData = []; // Summary data for the charts
+  const failureData = []; // Summary data for the charts
+
+  const ctxCombined = document.getElementById('combinedChart').getContext('2d');
+  const combinedChart = new Chart(ctxCombined, {
+    type: 'line',
+    data: {
+      labels: Array.from({ length: maxDataPoints }, (_, i) => `-${maxDataPoints - i - 1}`),
+      datasets: [
+        {
+          label: 'Successful connections',
+          data: connectionData,
+          borderColor: 'blue',
+          borderWidth: 2,
+          fill: false,
+        },
+        {
+          label: 'Failed connections',
+          data: failureData,
+          borderColor: 'red',
+          borderWidth: 2,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      animation: {
+        duration: 0,
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          position: 'bottom',
+          min: -maxDataPoints + 1,
+          max: 0,
+          stepSize: 1,
+          beginAtZero: true,
+        },
+        y: {
+          type: 'linear',
+          position: 'left',
+          title: {
+            display: true,
+            text: 'Count',
+          },
+        },
+      },
+    },
+  });
+
+  const updateChartData = () => {
+    combinedChart.data.labels = Array.from({ length: successData.length }, (_, i) => `-${successData.length - i - 1}`);
+    combinedChart.data.datasets[0].data = successData;
+    combinedChart.data.datasets[1].data = failureData;
+
+    // Update the chart
+    combinedChart.update();
+  };
+
+  /**
+   * Set up the socket & have it update the simulator and charts
+   */ 
+  const socket = io('http://localhost:3000');
+  socket.on('connectionCounts', (data) => {
+    connectionData.push(data);
+    successData.push(data.successfulConnections);
+    failureData.push(data.failedConnections);
+
+    // Trim data thats beyond the limit
+    if (successData.length > maxDataPoints) {
+      connectionData.shift();
+      successData.shift();
+      failureData.shift();
+    }
+
+    updateChartData();
+    runMonteCarloSimulation(monteCarloSampleSize);
+  });
+
+</script>

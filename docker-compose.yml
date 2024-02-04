@@ -6,9 +6,15 @@ services:
       - ./simulator-server:/usr/src/app
     ports:
       - "3000:3000"
+  traffic-server:
+    build: ./traffic-bot
+    volumes:
+      - ./traffic-bot:/usr/src/app
+    ports:
+      - "3001:3001"
   bot-server:
     build: ./attack-bot
     volumes:
       - ./attack-bot:/usr/src/app
     ports:
-      - "3001:3001"
+      - "3002:3002"
