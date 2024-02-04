@@ -9,5 +9,8 @@ You'll need to have Node/NPM, and Docker installed to participate.
 [Docker](https://www.docker.com/)
 
 ## Getting running
-`docker-compose build` will build our docker images
-`docker-compose up` will start both containers (Our Simulator server, and attack bot)
+`docker-compose build` will build the docker images
+
+`docker-compose up` will start all containers (A Simulator server, traffic bot, and attack bot)
+
+The live traffic dashboard will then be available on `http://localhost:3000/`
