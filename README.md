@@ -5,7 +5,9 @@ A full intro can be found in [this slide deck](https://docs.google.com/presentat
 
 ## Prerequisites 
 You'll need to have Node/NPM, and Docker installed to participate.
+
 [Node/NPM](https://nodejs.org/en)
+
 [Docker](https://www.docker.com/)
 
 ## Getting running
